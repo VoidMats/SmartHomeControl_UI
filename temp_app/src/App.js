@@ -6,7 +6,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import { NavigationBar } from './components/NavigationBar';
 import { Home } from './pages/Home';
-import { Sensor } from './pages/Sensor';
+import Sensor from './pages/Sensor.js';
 import { About } from './pages/About';
 import { Nomatch } from './pages/Nomatch';
 

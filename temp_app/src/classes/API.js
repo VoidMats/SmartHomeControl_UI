@@ -1,6 +1,6 @@
 
 // import Config from ./config.json
-const config = require('./config.json')
+const Config = require('../config.json')
 
 export default class APIData {
 
@@ -75,7 +75,7 @@ export default class APIData {
      * @param {char} unit 
      * @param {string} comment 
      */
-    addSensor(name, folder, position, unit, comment) {
+    async addSensor(name, folder, position, unit, comment) {
         const payload = {
             'name' : name,
             'folder' : folder,
