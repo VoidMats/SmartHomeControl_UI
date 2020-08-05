@@ -33,6 +33,7 @@ export const NavigationBar = () => (
             <Nav.Link href="/about">About</Nav.Link>
         </Nav>
         </Navbar.Collapse>
+        
     </Navbar>
   </Styles>
 )

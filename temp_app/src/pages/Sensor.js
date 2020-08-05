@@ -1,10 +1,10 @@
 
 import React, { Component } from 'react';
-import { Button, Container, Row } from 'react-bootstrap';
+import { Button, Container } from 'react-bootstrap';
 import styled from 'styled-components';
 import ErrorBoundary from '../components/ErrorBoundary.js';
 import ModalAddSensor from '../components/ModalAddSensor.js';
-import API from '../classes/API.js';
+//import API from '../classes/API.js';
 
 const GridWrapper = styled.div`
     display: grid;

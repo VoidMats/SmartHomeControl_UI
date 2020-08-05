@@ -41,7 +41,8 @@ export default class APIData {
             "username": login,
             "password": pwd
         }
-        const path = this._createHttpPath("auth", []);
+        const path = this._createHttpPathRoute("auth/login");
+        console.log(path)
         const response = await fetch(path, {
             method: 'POST',
             headers: {

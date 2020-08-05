@@ -52,7 +52,8 @@ export default class ModalAddSensor extends React.Component{
 
     handleChange(event) {
         const target = event.target
-        let value = ''
+        //let value = ''
+        console.log(target)
     }
 
     handleButtonSave(event) {
