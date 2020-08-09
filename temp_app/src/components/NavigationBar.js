@@ -1,9 +1,9 @@
 
-import React from 'react';
-import { Nav, Navbar } from 'react-bootstrap';
+import React, { Component } from 'react';
+import { Nav, Navbar, Button } from 'react-bootstrap';
 import styled from 'styled-components';
 
-const Styles = styled.div`
+const NavbarStyle = styled.div`
     .navbar { background-color: #8cc3a8; }
     a, .navbar-nav, .navbar-light .nav-link {
         color: #4a7f65;
@@ -21,19 +21,68 @@ const Styles = styled.div`
     }
 `;
 
-export const NavigationBar = () => (
-  <Styles>
-    <Navbar expand="lg">
-        <Navbar.Brand href="/">Home Temperature control</Navbar.Brand>
-        <Navbar.Toggle aria-controls="basic-navbar-nav"/>
-        <Navbar.Collapse id="basic-navbar-nav">
-        <Nav className="ml-auto">
-            <Nav.Link href="/">Home</Nav.Link> 
-            <Nav.Link href="/Sensor">Sensor</Nav.Link>
-            <Nav.Link href="/about">About</Nav.Link>
-        </Nav>
-        </Navbar.Collapse>
-        
-    </Navbar>
-  </Styles>
-)
+export default class NavigationBar extends Component {
+    
+    constructor(props) {
+        super(props);
+
+        this.mounted = false;
+        this.state = {
+            loggedIn: 0
+        }
+
+        this.handleLogout = this.handleLogout.bind(this)
+    }
+
+    componentDidMount() {
+        this.mounted = true;
+    }
+
+    componentWillUnmount() {
+        this.mounted = false;
+        this.setState({
+            loggedIn: 0
+        })
+    }
+
+    componentDidUpdate(prevProps, prevState) {
+        // Can't update with undefined props
+        if (this.props !== undefined) {
+            if (this.props.stateLogin !== prevProps.stateLogin) {
+                console.log("We gona update Navbar UI here")
+                console.log(this.props.stateLogin)
+                this.setState({
+                    loggedIn: this.props.stateLogin
+                })
+            }
+            console.log(this.props)
+        }
+    }
+
+    handleLogout(event) {
+        this.props.onLogout(0)
+        event.preventDefault();
+    }
+    
+    render() {
+        return ( 
+            <NavbarStyle>
+                <Navbar expand="lg">
+                    <Navbar.Brand href="/">Home Temperature control</Navbar.Brand>
+                    <Navbar.Toggle aria-controls="basic-navbar-nav"/>
+                    <Navbar.Collapse id="basic-navbar-nav">
+                    <Nav className="ml-auto">
+                        <Nav.Link href="/">Home</Nav.Link> 
+                        <Nav.Link href="/Sensor">Sensor</Nav.Link>
+                        <Nav.Link href="/about">About</Nav.Link>
+                    </Nav>
+                    <Button 
+                        variant="outline-primary" 
+                        className="pull-right"
+                        onClick={this.handleLogout}>Logout</Button>
+                    </Navbar.Collapse>
+                </Navbar>
+            </NavbarStyle>
+        )
+    }
+}

@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { Component } from 'react';
 import styled from 'styled-components';
 
 const GridWrapper = styled.div`
@@ -12,9 +12,45 @@ const GridWrapper = styled.div`
     grid-auto-rows: minmax(25px, auto);
 `;
 
-export const Home = (props) => (
-    <GridWrapper>
-        <p>This is a paragraph and I am writing on the home page</p>
-        <p>This is another paragraph, hi hey hello whatsup yo</p>
-    </GridWrapper>
-)
+export default class Home extends Component {
+
+    constructor(props) {
+        super(props);
+
+        this.mounted = false;
+
+        this.state = {
+            loggedIn: false
+        }
+
+    }
+
+    componentDidMount() {
+        this.mounted = true;
+    }
+
+    componentWillUnmount() {
+        this.mounted = false;
+    }
+
+    componentDidUpdate(prevProps, prevState) {
+        // Can't update with undefined props
+        if (this.props !== undefined) {
+            // Only update if props changed
+            if (this.props.stateLogin !== prevProps.stateLogin) {
+                console.log("We gona update UI here")
+                this.setState({
+                    loggedIn: this.props.stateLogin
+                })
+            }
+        }
+    }
+
+    render() {
+        return (
+            () => {
+
+            }
+        )
+    }
+}

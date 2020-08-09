@@ -36,6 +36,15 @@ export default class APIData {
      * @param {string} login
      * @param {string} pwd
      */
+    /*
+    curl -H "Origin: *" \
+    -H "Access-Control-Request-Method: POST" \
+    -H "Access-Control-Request-Headers: X-Requested-With" \
+    -X OPTIONS --verbose \
+    -d '{"username":"test", "password":"test"}' http://192.168.1.52:5054/auth/login
+    */
+    //  curl -H "Access-Control-Request-Method: POST" -H "Origin: http://localhost" --head http://www.example.com/
+    //  curl -i -X POST -d '{"username":"test", "password":"test"}' http://192.168.1.52:5054/auth/login
     async login(login, pwd) {
         const jsonData = {
             "username": login,

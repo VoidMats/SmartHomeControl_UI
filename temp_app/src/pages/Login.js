@@ -1,7 +1,7 @@
 
 import React, { Component } from "react";
 import styled from 'styled-components';
-//import API from '../classes/API.js';
+import API from '../classes/API.js';
 
 // TODO place login vertically in the middle
 const LoginStyle = styled.div`
@@ -29,16 +29,58 @@ const LoginStyle = styled.div`
     }
 `;
 
+function RenderInputDialog(props) {
+    console.log("We render login dialog")
+    return (
+        <LoginStyle>
+        <div className="login-container">
+            <form className="login-form">
+                <h3 className="login-title">Sign In</h3>
+
+                <div className="login-form-input">
+                    <label>Username</label>
+                    <input 
+                        type="username"
+                        className="login-form-input"
+                        name="formUser" 
+                        placeholder="Enter username"
+                        value={props.formUser}
+                        onChange={props.handleChangeForm} />
+                </div>
+
+                <div className="login-form-input">
+                    <label>Password</label>
+                    <input 
+                        type="password" 
+                        className="login-form-input"
+                        name="formPassword" 
+                        placeholder="Enter password"
+                        value={props.formPassword}
+                        onChange={props.handleChangeForm} />
+                </div>
+
+                <div className="row justify-content-center">
+                    <button 
+                        type="submit" 
+                        className="btn btn-outline-primary"
+                        onClick={props.handleLogin}>Login</button>
+                </div>                           
+            </form>
+        </div>
+        </LoginStyle>
+    )
+}
+
 export default class Login extends Component {
 
     constructor(props) {
         super(props);
 
         this.mounted = false;
-        //this.api = props.api;
+        this.api = new API();
 
         this.state = {
-            loggedIn: false,
+            loggedIn: 0,
             loggedInAs: '',
             formUser: '',
             formPassword: '' 
@@ -46,7 +88,7 @@ export default class Login extends Component {
 
         this.handleLogin = this.handleLogin.bind(this);
         this.handleLogut = this.handleLogut.bind(this);
-        this.handleChange = this.handleChange.bind(this);
+        this.handleChangeForm = this.handleChangeForm.bind(this);
     }
 
     componentDidMount() {
@@ -54,27 +96,40 @@ export default class Login extends Component {
 
         const lsLoggedIn = localStorage.getItem('loggedIn');
         const lsLoggedInAs = localStorage.getItem('loggedInAs');
-        if (lsLoggedIn === 'true') {
+        if (lsLoggedIn === 1) {
             this.setState({
-                loggedIn: lsLoggedIn,
+                loggedIn: 1,
                 loggedInAs: lsLoggedInAs
             })
         }
     }
 
+    componentWillUnmount() {
+        this.mounted = false;
+        this.api.abort();
+    }
+
     componentDidUpdate(prevProps, prevState) {
         // Can't update with undefined props
         if (this.props !== undefined) {
-            // TODO place my code here
+            // Only update if props changed
+            if (this.props.stateLogin !== prevProps.stateLogin) {
+                console.log("We gona update UI here")
+                this.setState({
+                    loggedIn: this.props.stateLogin
+                })
+            }
+            console.log(prevProps)
+            console.log(this.props)
         }
     }
 
-    handleChange(event) {
+    handleChangeForm(event) {
         const target = event.target;
         const name = target.name;
         let value = '';
         switch (name) {
-            case 'formName':
+            case 'formUser':
                 value = target.value;
                 break;
             case 'formPassword':
@@ -83,7 +138,6 @@ export default class Login extends Component {
             default:
                 console.error("Error - handleChange got default value")
         }
-
         this.setState({
             [name]: value
         });
@@ -92,14 +146,14 @@ export default class Login extends Component {
     handleLogin(event) {
         console.log('This is triggered')
         
-        const res = this.props.api.login(this.state.formUser, this.state.formPassword)
+        const res = this.api.login(this.state.formUser, this.state.formPassword)
         console.log(res)
 
         this.setState({
-            loggedIn: true,
+            loggedIn: 1,
             loggedInAs: this.state.formUser 
         });
-        localStorage.setItem('loggedIn', true);
+        localStorage.setItem('loggedIn', 1);
         localStorage.setItem('loggedInAs', this.state.formUser);
 
         event.preventDefault();
@@ -107,31 +161,35 @@ export default class Login extends Component {
 
     handleLogut() {
         this.setState({
-            loggedIn: false,
+            loggedIn: 0,
             loggedInAs: ''
         });
         localStorage.removeItem('loggedIn');
         localStorage.removeItem('loggedInAs');
     }
-    
-    render() {
-        return (
-            <LoginStyle>
+
+    renderLogin = () => {
+        const isLoggedIn = this.state.loggedIn
+        console.log(isLoggedIn)
+        if (isLoggedIn === false) {
+            console.log("We render login dialog")
+            return (
+                <LoginStyle>
                 <div className="login-container">
                     <form className="login-form">
                         <h3 className="login-title">Sign In</h3>
-
+    
                         <div className="login-form-input">
                             <label>Username</label>
                             <input 
                                 type="username"
                                 className="login-form-input"
-                                name="formName" 
+                                name="formUser" 
                                 placeholder="Enter username"
                                 value={this.state.formUser}
-                                onChange={this.handleChange} />
+                                onChange={this.handleChangeForm} />
                         </div>
-
+    
                         <div className="login-form-input">
                             <label>Password</label>
                             <input 
@@ -140,20 +198,81 @@ export default class Login extends Component {
                                 name="formPassword" 
                                 placeholder="Enter password"
                                 value={this.state.formPassword}
-                                onChange={this.handleChange} />
+                                onChange={this.handleChangeForm} />
                         </div>
-
+    
                         <div className="row justify-content-center">
                             <button 
                                 type="submit" 
                                 className="btn btn-outline-primary"
                                 onClick={this.handleLogin}>Login</button>
-                        </div>
-                        
+                        </div>                           
                     </form>
                 </div>
-            </LoginStyle>
-        );
+                </LoginStyle>
+            )
+        }
+        else {
+            return (
+                <div className="login-container"></div>
+            )
+        }
+    }
+    
+    render() {
+        const isLoggedIn = this.state.loggedIn
+        console.log(isLoggedIn)
+        let dialog;
+        if (isLoggedIn === 0) {
+            dialog = (
+                <LoginStyle>
+                <div className="login-container">
+                    <form className="login-form">
+                        <h3 className="login-title">Sign In</h3>
+    
+                        <div className="login-form-input">
+                            <label>Username</label>
+                            <input 
+                                type="username"
+                                className="login-form-input"
+                                name="formUser" 
+                                placeholder="Enter username"
+                                value={this.state.formUser}
+                                onChange={this.handleChangeForm} />
+                        </div>
+    
+                        <div className="login-form-input">
+                            <label>Password</label>
+                            <input 
+                                type="password" 
+                                className="login-form-input"
+                                name="formPassword" 
+                                placeholder="Enter password"
+                                value={this.state.formPassword}
+                                onChange={this.handleChangeForm} />
+                        </div>
+    
+                        <div className="row justify-content-center">
+                            <button 
+                                type="submit" 
+                                className="btn btn-outline-primary"
+                                onClick={this.handleLogin}>Login</button>
+                        </div>                           
+                    </form>
+                </div>
+                </LoginStyle>
+            )
+        } else {
+            dialog = (
+                <div className="login-container"></div>
+            )
+        }
+
+        return ( 
+            <div>
+                {dialog}
+            </div>
+        )
     }
 }
 
@@ -161,6 +280,13 @@ export default class Login extends Component {
 <p className="login-forgot-password text-right">
                             Forgot <a href="#">password?</a>
                         </p>
+
+
+<RenderInputDialog 
+                formUser={this.state.formUser}
+                formPassword={this.state.formPassword}
+                onChange={this.handleChangeForm}
+                onClick={this.handleLogin} />;
 
 
 
