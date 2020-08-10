@@ -69,9 +69,11 @@ export default class App extends Component {
           </ErrorBoundary>
 
           <Switch>
-            <Route exact path="/" component={Home} />
+            <Route exact path="/" render={(props) => 
+              <Home {...props} stateLogin={this.state.loggedIn} />} />
             <Route path="/about" component={About} />
-            <Route path="/sensor" component={Sensor} />
+            <Route path="/sensor" render={(props) => 
+              <Sensor {...props} stateLogin={this.state.loggedIn} />} />
             <Route component={Nomatch} />
           </Switch>
         </Router>

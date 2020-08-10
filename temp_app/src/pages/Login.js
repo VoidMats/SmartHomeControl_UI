@@ -114,13 +114,13 @@ export default class Login extends Component {
         if (this.props !== undefined) {
             // Only update if props changed
             if (this.props.stateLogin !== prevProps.stateLogin) {
-                console.log("We gona update UI here")
+                console.log("We gona update UI Login here")
                 this.setState({
                     loggedIn: this.props.stateLogin
                 })
             }
-            console.log(prevProps)
-            console.log(this.props)
+            //console.log(prevProps)
+            //console.log(this.props)
         }
     }
 
@@ -144,17 +144,20 @@ export default class Login extends Component {
     }
 
     handleLogin(event) {
-        console.log('This is triggered')
-        
+        console.log('Send request to API')
         const res = this.api.login(this.state.formUser, this.state.formPassword)
         console.log(res)
 
+        // Set state
         this.setState({
             loggedIn: 1,
             loggedInAs: this.state.formUser 
         });
+        // Add username to localstorage
         localStorage.setItem('loggedIn', 1);
         localStorage.setItem('loggedInAs', this.state.formUser);
+        // Pass value to parent
+        this.props.onLogin(1);
 
         event.preventDefault();
     }
@@ -222,9 +225,9 @@ export default class Login extends Component {
     render() {
         const isLoggedIn = this.state.loggedIn
         console.log(isLoggedIn)
-        let dialog;
+        let login;
         if (isLoggedIn === 0) {
-            dialog = (
+            login = (
                 <LoginStyle>
                 <div className="login-container">
                     <form className="login-form">
@@ -263,14 +266,14 @@ export default class Login extends Component {
                 </LoginStyle>
             )
         } else {
-            dialog = (
+            login = (
                 <div className="login-container"></div>
             )
         }
 
         return ( 
             <div>
-                {dialog}
+                {login}
             </div>
         )
     }

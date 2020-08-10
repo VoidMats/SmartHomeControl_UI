@@ -1,15 +1,12 @@
 
 import React, { Component } from 'react';
 import styled from 'styled-components';
+import Table from 'react-bootstrap/Table';
+//import API from '../classes/API.js';
 
-const GridWrapper = styled.div`
-    display: grid;
-    grid-gap: 10px;
-    margin-top: 1em;
-    margin-left: 6em;
-    margin-right: 6em;
-    grid-template-columns: repeat(12, 1fr);
-    grid-auto-rows: minmax(25px, auto);
+// TODO place proper style for homepage
+const HomeStyle = styled.div`
+    
 `;
 
 export default class Home extends Component {
@@ -17,10 +14,11 @@ export default class Home extends Component {
     constructor(props) {
         super(props);
 
+        //this.api = new API()
         this.mounted = false;
 
         this.state = {
-            loggedIn: false
+            loggedIn: 0
         }
 
     }
@@ -31,6 +29,7 @@ export default class Home extends Component {
 
     componentWillUnmount() {
         this.mounted = false;
+        //this.api.abort();
     }
 
     componentDidUpdate(prevProps, prevState) {
@@ -38,7 +37,7 @@ export default class Home extends Component {
         if (this.props !== undefined) {
             // Only update if props changed
             if (this.props.stateLogin !== prevProps.stateLogin) {
-                console.log("We gona update UI here")
+                console.log("We are going to update Home page")
                 this.setState({
                     loggedIn: this.props.stateLogin
                 })
@@ -47,10 +46,57 @@ export default class Home extends Component {
     }
 
     render() {
+        const isLoggedIn = this.state.loggedIn
+        console.log(isLoggedIn);
+        let home;
+        if (isLoggedIn === 1) {
+            home = (
+                <HomeStyle>
+                <div className="home-container">
+                    <h3 className="home-title-temp">DS18B20 temperature sensors</h3>
+                    <Table striped bordered hover size="sm">
+                        <thead>
+                            <tr>
+                            <th>#</th>
+                            <th>First Name</th>
+                            <th>Last Name</th>
+                            <th>Username</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                            <td>1</td>
+                            <td>Mark</td>
+                            <td>Otto</td>
+                            <td>@mdo</td>
+                            </tr>
+                            <tr>
+                            <td>2</td>
+                            <td>Jacob</td>
+                            <td>Thornton</td>
+                            <td>@fat</td>
+                            </tr>
+                            <tr>
+                            <td>3</td>
+                            <td colSpan="2">Larry the Bird</td>
+                            <td>@twitter</td>
+                            </tr>
+                        </tbody>
+                    </Table>
+                    <h3 className="home-title-relay">ON/OFF Relays</h3>
+                </div>
+                </HomeStyle>
+            )
+        } else {
+            home = (
+                <div className="login-container"></div>
+            )
+        }
+        // Return the page
         return (
-            () => {
-
-            }
+            <div>
+                {home}
+            </div>
         )
     }
 }

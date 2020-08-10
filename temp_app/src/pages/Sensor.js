@@ -1,19 +1,14 @@
 
 import React, { Component } from 'react';
-import { Button, Container } from 'react-bootstrap';
+import { Table, Button, Container, Collapse } from 'react-bootstrap';
 import styled from 'styled-components';
 import ErrorBoundary from '../components/ErrorBoundary.js';
 import ModalAddSensor from '../components/ModalAddSensor.js';
 //import API from '../classes/API.js';
 
-const GridWrapper = styled.div`
-    display: grid;
-    grid-gap: 10px;
-    margin-top: 1em;
-    margin-left: 6em;
-    margin-right: 6em;
-    grid-template-columns: repeat(12, 1fr);
-    grid-auto-rows: minmax(25px, auto);
+// TODO add sensor style
+const SensorStyle = styled.div`
+    
 `;
 
 export default class Sensor extends Component {
@@ -23,8 +18,10 @@ export default class Sensor extends Component {
 
         //this.api = new API();
         this.mounted = false;
+        this.showAdd = false;
 
         this.state = {
+            loggedIn: 0,
             showAddSensor: false
         }
     }
@@ -38,6 +35,18 @@ export default class Sensor extends Component {
         //this.api.abort();
     }
 
+    componentDidUpdate(prevProps, prevState) {
+        // Can't update with undefined props
+        if (this.props !== undefined) {
+            if (this.props.stateLogin !== prevProps.stateLogin) {
+                console.log("We are going to update Sensor page")
+                this.setState({
+                    loggedIn: this.props.stateLogin
+                })
+            }
+        }
+    }
+
     disableAddSensor() {
         this.setState({
             showAddSensor: false
@@ -48,22 +57,70 @@ export default class Sensor extends Component {
 
     }
 
+    handleButtonShowAdd(event) {
+        this.showAdd = !this.showAdd;
+    }
+
     render() {
-        return (
-            <Container>
-                <h2>Sensor Page</h2>
-                <GridWrapper>
-                    <div>
+        const isLoggedIn = this.state.loggedIn
+        let sensor;
+        if (isLoggedIn === 1) {
+            sensor = (
+                <SensorStyle>
+                <div className="sensor-container">
+                    <h3 className="sensor-title-sensors">All active DS18BS20 sensors</h3>
+                    <Table striped bordered hover size="sm">
+                        <thead>
+                            <tr>
+                            <th>#</th>
+                            <th>First Name</th>
+                            <th>Last Name</th>
+                            <th>Username</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                            <td>1</td>
+                            <td>Mark</td>
+                            <td>Otto</td>
+                            <td>@mdo</td>
+                            </tr>
+                            <tr>
+                            <td>2</td>
+                            <td>Jacob</td>
+                            <td>Thornton</td>
+                            <td>@fat</td>
+                            </tr>
+                            <tr>
+                            <td>3</td>
+                            <td colSpan="2">Larry the Bird</td>
+                            <td>@twitter</td>
+                            </tr>
+                        </tbody>
+                    </Table>
+                    <h3 className="sensor-title-add">Add DS18BS20 temperature sensor</h3>
+                    <Button name="showAddSensor" 
+                            variant="secondary" 
+                            onClick={this.handleButtonShowAdd}>Close</Button>
+                    <Collapse in={this.showAdd}>
                         <ErrorBoundary>
-                            <ModalAddSensor 
-                                show={this.state.showAddSensor}
-                                disable={this.disableAddSensor}/>
+                        <ModalAddSensor 
+                            show={this.state.showAddSensor}
+                            disable={this.disableAddSensor}/>
                         </ErrorBoundary>
-                        <Button >Add sensor</Button>
-                    </div>
-                    <Button >Delete sensor</Button>
-                </GridWrapper>
-            </Container>
+                    </Collapse>
+                </div>
+                </SensorStyle>
+            )
+        } else {
+            sensor = (
+                <div className="sensor-container"></div>
+            )
+        }
+        return (   
+            <div>
+                {sensor}
+            </div>
         )
     }
     
