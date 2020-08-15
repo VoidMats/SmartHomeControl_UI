@@ -8,7 +8,7 @@ import NavigationBar from './components/NavigationBar';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Sensor from './pages/Sensor';
-import { About } from './pages/About';
+import About from './pages/About';
 import { Nomatch } from './pages/Nomatch';
 import ErrorBoundary from './components/ErrorBoundary';
 //import API from './classes/API.js';
@@ -71,7 +71,8 @@ export default class App extends Component {
           <Switch>
             <Route exact path="/" render={(props) => 
               <Home {...props} stateLogin={this.state.loggedIn} />} />
-            <Route path="/about" component={About} />
+            <Route path="/about" render={(props) =>
+              <About {...props} stateLogin={this.state.loggedIn} />} />
             <Route path="/sensor" render={(props) => 
               <Sensor {...props} stateLogin={this.state.loggedIn} />} />
             <Route component={Nomatch} />

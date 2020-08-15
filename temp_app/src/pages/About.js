@@ -1,22 +1,63 @@
 
-import React from 'react';
+import React, { Component } from 'react';
 import styled from 'styled-components';
 
-const GridWrapper = styled.div`
-    display: grid;
-    grid-gap: 10px;
-    margin-top: 1em;
-    margin-left: 6em;
-    margin-right: 6em;
-    grid-template-columns: repeat(12, 1fr);
-    grid-auto-rows: minmax(25px, auto);
+const AboutStyle = styled.div`
+
 `;
 
-export const About = () => (
-    <GridWrapper>
-        <h2>About Page</h2>
-        <p>State at ceiling lay on arms while you're using the keyboard so this human feeds me.</p>
-        <p>I am a kitty cat, sup, feed me, no cares in the world</p>
-        <p>Meow meow, I tell my human purr for no reason but to chase after</p>
-    </GridWrapper>
-)
+export default class About extends Component {
+    
+    constructor(props) {
+        super(props);
+
+        this.mounted = false;
+
+        this.state = {
+            loggedIn: 0
+        }
+    }
+
+    componentDidMount() {
+        this.mounted = true;
+    }
+
+    componentWillMount() {
+        this.mounted = false;
+    }
+
+    componentDidUpdate(prevProps, prevState) {
+        if (this.props !== undefined) {
+            if (this.props.stateLogin !== prevProps.stateLogin) {
+                this.setState({
+                    loggedIn: this.props.stateLogin
+                })
+            }
+        }
+    }
+
+    render() {
+        const isLoggedIn = this.state.loggedIn
+        let about;
+        if (isLoggedIn === 1) {
+            about = (
+                <AboutStyle>
+                <div className="about-container">
+                    <h2 className="about-title">About Home Temperature Control</h2>
+
+                </div>
+                </AboutStyle>
+            )
+        } else {
+            about = (
+                <div className="about-container"></div>
+            )
+        }
+        // Render the page
+        return (
+            <div>
+                {about}
+            </div>
+        )
+    }
+}
