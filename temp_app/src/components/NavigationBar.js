@@ -1,6 +1,7 @@
 
 import React, { Component } from 'react';
 import { Nav, Navbar, Button } from 'react-bootstrap';
+///import { Link } from 'react-router-dom'
 import styled from 'styled-components';
 
 const NavbarStyle = styled.div`
@@ -40,9 +41,9 @@ export default class NavigationBar extends Component {
 
     componentWillUnmount() {
         this.mounted = false;
-        this.setState({
-            loggedIn: 0
-        })
+        //this.setState({
+        //    loggedIn: 0
+        //})
     }
 
     componentDidUpdate(prevProps, prevState) {
@@ -50,16 +51,17 @@ export default class NavigationBar extends Component {
         if (this.props !== undefined) {
             if (this.props.stateLogin !== prevProps.stateLogin) {
                 console.log("We gona update Navbar UI here")
-                console.log(this.props.stateLogin)
+                console.log(this.props)
                 this.setState({
                     loggedIn: this.props.stateLogin
                 })
             }
-            console.log(this.props)
         }
     }
 
     handleLogout(event) {
+        localStorage.clear('loggedIn');
+        localStorage.clear('loggedInAs');
         this.props.onLogout(0)
         event.preventDefault();
     }
@@ -86,3 +88,22 @@ export default class NavigationBar extends Component {
         )
     }
 }
+
+/*
+<Nav.Link href="/">Home</Nav.Link> 
+<Nav.Link href="/Sensor">Sensor</Nav.Link>
+<Nav.Link href="/about">About</Nav.Link>
+
+
+<NavItem componentClass={Link} 
+            href='/' 
+            active={ === '/'}>Home</NavItem>
+<NavItem componentClass={Link} 
+            href='/sensor' 
+            active={location.pathname === '/dogs'}>Sensor</NavItem>
+<NavItem componentClass={Link} 
+            href='/about' 
+            active={location.pathname === '/about'}>About</NavItem>
+*/
+
+

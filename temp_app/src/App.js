@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 //import logo from './logo.svg';
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
-//import '../node_modules/bootstrap/dist/css/bootstrap.min.css';
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import NavigationBar from './components/NavigationBar';
 import Home from './pages/Home';
@@ -34,11 +33,24 @@ export default class App extends Component {
     super(props);
 
     this.state = {
-      loggedIn: 0
+      loggedIn: 0,
+      loggedInAs: ''
     }
 
     this.handleLogoutChange = this.handleLogoutChange.bind(this);
     this.handleLoginChange = this.handleLoginChange.bind(this);
+  }
+
+  componentDidMount() {
+    const lsLoggedIn = localStorage.getItem('loggedIn');
+    const lsLoggedInAs = localStorage.getItem('loggedInAs');
+    if (lsLoggedIn === '1') {
+      console.log("We are already logged in at APP")
+      this.setState({
+          loggedIn: 1,
+          leggedInAs: lsLoggedInAs
+      })
+    }        
   }
 
   handleLogoutChange = (value) => {
@@ -60,14 +72,13 @@ export default class App extends Component {
   render() {
     return (
       <React.Fragment>
+        <ErrorBoundary>
+          <NavigationBar stateLogin={this.state.loggedIn} onLogout={this.handleLogoutChange} />
+        </ErrorBoundary>
+        <ErrorBoundary>
+          <Login stateLogin={this.state.loggedIn} onLogin={this.handleLoginChange}/>
+        </ErrorBoundary>
         <Router>
-          <ErrorBoundary>
-            <NavigationBar stateLogin={this.state.loggedIn} onLogout={this.handleLogoutChange} />
-          </ErrorBoundary>
-          <ErrorBoundary>
-            <Login stateLogin={this.state.loggedIn} onLogin={this.handleLoginChange}/>
-          </ErrorBoundary>
-
           <Switch>
             <Route exact path="/" render={(props) => 
               <Home {...props} stateLogin={this.state.loggedIn} />} />

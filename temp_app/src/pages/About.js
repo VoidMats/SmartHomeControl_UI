@@ -20,6 +20,14 @@ export default class About extends Component {
 
     componentDidMount() {
         this.mounted = true;
+
+        const lsLoggedIn = localStorage.getItem('loggedIn');
+        if (lsLoggedIn === 1) {
+            console.log("We are already logged in at ABOUT")
+            this.setState({
+                loggedIn: 1
+            })
+        }       
     }
 
     componentWillMount() {

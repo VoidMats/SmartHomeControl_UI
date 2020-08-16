@@ -29,47 +29,6 @@ const LoginStyle = styled.div`
     }
 `;
 
-function RenderInputDialog(props) {
-    console.log("We render login dialog")
-    return (
-        <LoginStyle>
-        <div className="login-container">
-            <form className="login-form">
-                <h3 className="login-title">Sign In</h3>
-
-                <div className="login-form-input">
-                    <label>Username</label>
-                    <input 
-                        type="username"
-                        className="login-form-input"
-                        name="formUser" 
-                        placeholder="Enter username"
-                        value={props.formUser}
-                        onChange={props.handleChangeForm} />
-                </div>
-
-                <div className="login-form-input">
-                    <label>Password</label>
-                    <input 
-                        type="password" 
-                        className="login-form-input"
-                        name="formPassword" 
-                        placeholder="Enter password"
-                        value={props.formPassword}
-                        onChange={props.handleChangeForm} />
-                </div>
-
-                <div className="row justify-content-center">
-                    <button 
-                        type="submit" 
-                        className="btn btn-outline-primary"
-                        onClick={props.handleLogin}>Login</button>
-                </div>                           
-            </form>
-        </div>
-        </LoginStyle>
-    )
-}
 
 export default class Login extends Component {
 
@@ -93,15 +52,18 @@ export default class Login extends Component {
 
     componentDidMount() {
         this.mounted = true;
-
+        
+        /*
         const lsLoggedIn = localStorage.getItem('loggedIn');
         const lsLoggedInAs = localStorage.getItem('loggedInAs');
         if (lsLoggedIn === 1) {
+            console.log("We are in componentDidMount - Login and we are already login")
             this.setState({
                 loggedIn: 1,
                 loggedInAs: lsLoggedInAs
             })
-        }
+            this.props.onLogin(1);
+        }*/
     }
 
     componentWillUnmount() {
@@ -119,8 +81,6 @@ export default class Login extends Component {
                     loggedIn: this.props.stateLogin
                 })
             }
-            //console.log(prevProps)
-            //console.log(this.props)
         }
     }
 
@@ -162,64 +122,13 @@ export default class Login extends Component {
         event.preventDefault();
     }
 
-    handleLogut() {
+    handleLogut(event) {
         this.setState({
             loggedIn: 0,
             loggedInAs: ''
         });
         localStorage.removeItem('loggedIn');
         localStorage.removeItem('loggedInAs');
-    }
-
-    renderLogin = () => {
-        const isLoggedIn = this.state.loggedIn
-        console.log(isLoggedIn)
-        if (isLoggedIn === false) {
-            console.log("We render login dialog")
-            return (
-                <LoginStyle>
-                <div className="login-container">
-                    <form className="login-form">
-                        <h3 className="login-title">Sign In</h3>
-    
-                        <div className="login-form-input">
-                            <label>Username</label>
-                            <input 
-                                type="username"
-                                className="login-form-input"
-                                name="formUser" 
-                                placeholder="Enter username"
-                                value={this.state.formUser}
-                                onChange={this.handleChangeForm} />
-                        </div>
-    
-                        <div className="login-form-input">
-                            <label>Password</label>
-                            <input 
-                                type="password" 
-                                className="login-form-input"
-                                name="formPassword" 
-                                placeholder="Enter password"
-                                value={this.state.formPassword}
-                                onChange={this.handleChangeForm} />
-                        </div>
-    
-                        <div className="row justify-content-center">
-                            <button 
-                                type="submit" 
-                                className="btn btn-outline-primary"
-                                onClick={this.handleLogin}>Login</button>
-                        </div>                           
-                    </form>
-                </div>
-                </LoginStyle>
-            )
-        }
-        else {
-            return (
-                <div className="login-container"></div>
-            )
-        }
     }
     
     render() {
@@ -279,24 +188,3 @@ export default class Login extends Component {
     }
 }
 
-/* 
-<p className="login-forgot-password text-right">
-                            Forgot <a href="#">password?</a>
-                        </p>
-
-
-<RenderInputDialog 
-                formUser={this.state.formUser}
-                formPassword={this.state.formPassword}
-                onChange={this.handleChangeForm}
-                onClick={this.handleLogin} />;
-
-
-
-<div className="form-group">
-<div className="custom-control custom-checkbox">
-    <input type="checkbox" className="custom-control-input" id="customCheck1" />
-    <label className="custom-control-label" htmlFor="customCheck1">Remember me</label>
-    </div>
-</div>
-*/

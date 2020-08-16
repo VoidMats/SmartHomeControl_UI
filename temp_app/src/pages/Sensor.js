@@ -1,9 +1,10 @@
 
 import React, { Component } from 'react';
-import { Table, Button, Container, Collapse } from 'react-bootstrap';
+import { Table, Button } from 'react-bootstrap';
 import styled from 'styled-components';
 import ErrorBoundary from '../components/ErrorBoundary.js';
 import ModalAddSensor from '../components/ModalAddSensor.js';
+import ModalDeleteSensor from '../components/ModalDeleteSensor.js'
 //import API from '../classes/API.js';
 
 // TODO add sensor style
@@ -22,12 +23,24 @@ export default class Sensor extends Component {
 
         this.state = {
             loggedIn: 0,
-            showAddSensor: false
+            showAddSensor: false,
+            showDeleteSensor: false
         }
+
+        this.handleButtonShowAdd = this.handleButtonShowAdd.bind(this);
+        this.handleButtonShowDelete = this.handleButtonShowDelete.bind(this);
     }
 
     componentDidMount() {
         this.mounted = true;
+
+        const lsLoggedIn = localStorage.getItem('loggedIn');
+        if (lsLoggedIn === 1) {
+            console.log("We are already logged in at SENSOR")
+            this.setState({
+                loggedIn: 1
+            })
+        }       
     }
 
     componentWillUnmount() {
@@ -47,18 +60,47 @@ export default class Sensor extends Component {
         }
     }
 
-    disableAddSensor() {
+    changeShowAddSensor(event) {
         this.setState({
-            showAddSensor: false
+            showAddSensor: !this.state.showAddSensor
         })
     }
+
+    changeShowDeleteSensor(event) {
+        this.setState({
+            showDeleteSensor: !this.state.showDeleteSensor
+        })
+    }
+
 
     handleChange(event) {
 
     }
 
     handleButtonShowAdd(event) {
-        this.showAdd = !this.showAdd;
+        this.setState({
+            showAddSensor: true
+        })
+    }
+
+    onModalAddClose = (value) => {
+        console.log("Trigger closing Modal add sensor")
+        this.setState({
+            showAddSensor: value
+        })
+    }
+
+    handleButtonShowDelete(event) {
+        this.setState({
+            showDeleteSensor: true
+        })
+    }
+
+    onModalDeleteClose = (value) => {
+        console.log("Trigger closing Modal delete sensor")
+        this.setState({
+            showDeleteSensor: value
+        })
     }
 
     render() {
@@ -98,17 +140,23 @@ export default class Sensor extends Component {
                             </tr>
                         </tbody>
                     </Table>
-                    <h3 className="sensor-title-add">Add DS18BS20 temperature sensor</h3>
                     <Button name="showAddSensor" 
                             variant="secondary" 
-                            onClick={this.handleButtonShowAdd}>Close</Button>
-                    <Collapse in={this.showAdd}>
-                        <ErrorBoundary>
-                        <ModalAddSensor 
-                            show={this.state.showAddSensor}
-                            disable={this.disableAddSensor}/>
-                        </ErrorBoundary>
-                    </Collapse>
+                            onClick={() => this.handleButtonShowAdd()}>Add</Button>
+                    <Button name="showDeleteSensor"
+                            variant="secondary"
+                            onClick={() => this.handleButtonShowDelete()}>Delete</Button>
+                    <ErrorBoundary>
+                    <ModalAddSensor 
+                        show={this.state.showAddSensor}
+                        onClosing={this.onModalAddClose}/>
+                    </ErrorBoundary>
+                    <ErrorBoundary>
+                    <ModalDeleteSensor
+                        show={this.state.showDeleteSensor}
+                        onClosing={this.onModalDeleteClose} />
+                    </ErrorBoundary>
+
                 </div>
                 </SensorStyle>
             )

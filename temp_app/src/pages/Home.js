@@ -25,6 +25,14 @@ export default class Home extends Component {
 
     componentDidMount() {
         this.mounted = true;
+
+        const lsLoggedIn = localStorage.getItem('loggedIn');
+        if (lsLoggedIn === '1') {
+            console.log("We are already logged in at HOME")
+            this.setState({
+                loggedIn: 1
+            })
+        }        
     }
 
     componentWillUnmount() {
@@ -47,7 +55,6 @@ export default class Home extends Component {
 
     render() {
         const isLoggedIn = this.state.loggedIn
-        console.log(isLoggedIn);
         let home;
         if (isLoggedIn === 1) {
             home = (
@@ -84,6 +91,35 @@ export default class Home extends Component {
                         </tbody>
                     </Table>
                     <h3 className="home-title-relay">ON/OFF Relays</h3>
+                    <Table striped bordered hover size="sm">
+                        <thead>
+                            <tr>
+                            <th>#</th>
+                            <th>First Name</th>
+                            <th>Last Name</th>
+                            <th>Username</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                            <td>1</td>
+                            <td>Mark</td>
+                            <td>Otto</td>
+                            <td>@mdo</td>
+                            </tr>
+                            <tr>
+                            <td>2</td>
+                            <td>Jacob</td>
+                            <td>Thornton</td>
+                            <td>@fat</td>
+                            </tr>
+                            <tr>
+                            <td>3</td>
+                            <td colSpan="2">Larry the Bird</td>
+                            <td>@twitter</td>
+                            </tr>
+                        </tbody>
+                    </Table>
                 </div>
                 </HomeStyle>
             )
