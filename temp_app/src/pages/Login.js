@@ -104,6 +104,7 @@ export default class Login extends Component {
     }
 
     handleLogin(event) {
+        // 
         console.log('Send request to API')
         const res = this.api.login(this.state.formUser, this.state.formPassword)
         console.log(res)
