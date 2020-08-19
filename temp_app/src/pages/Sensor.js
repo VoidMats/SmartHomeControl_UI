@@ -1,16 +1,32 @@
 
 import React, { Component } from 'react';
-import { Table, Button } from 'react-bootstrap';
+import { Table, Button, Container, Row } from 'react-bootstrap';
 import styled from 'styled-components';
 import ErrorBoundary from '../components/ErrorBoundary.js';
 import ModalAddSensor from '../components/ModalAddSensor.js';
 import ModalDeleteSensor from '../components/ModalDeleteSensor.js'
+import API from '../classes/API.js';
+import { CreateTable } from '../components/Table.js'
 //import API from '../classes/API.js';
 
-// TODO add sensor style
 const SensorStyle = styled.div`
-    
+    .sensor-title {
+        text-align: center;
+        padding: 16px 0px;
+    }
+    .table {
+        width: 90%;
+        margin: 0 auto;
+    }
+    .sensor-buttons {
+        padding: 10px 5px;
+        margin: 0 auto;
+    }
+    .sensor-button {
+        padding: 5px, 5px;
+    }
 `;
+
 
 export default class Sensor extends Component {
    
@@ -20,32 +36,60 @@ export default class Sensor extends Component {
         //this.api = new API();
         this.mounted = false;
         this.showAdd = false;
+        this.api = new API();
 
         this.state = {
             loggedIn: 0,
             showAddSensor: false,
-            showDeleteSensor: false
+            showDeleteSensor: false,
+            dataSensors: [
+                [1, "Sensor1", "Hall", "C"],
+                [2, "Sensor2", "Dinner", "F"],
+                [3, "Sensor3", "Bedroom", "C"]
+            ]
         }
 
         this.handleButtonShowAdd = this.handleButtonShowAdd.bind(this);
         this.handleButtonShowDelete = this.handleButtonShowDelete.bind(this);
+        //this.onCreateTable = this.onCreateTable.bind(this);
+        //this.onCreateData = this.onCreateData.bind(this);
     }
 
     componentDidMount() {
         this.mounted = true;
 
+        const jwt = localStorage.getItem("jwt")
+        if (jwt) {
+            this.api.addToken(jwt)
+        }
+        
         const lsLoggedIn = localStorage.getItem('loggedIn');
         if (lsLoggedIn === 1) {
-            console.log("We are already logged in at SENSOR")
             this.setState({
                 loggedIn: 1
             })
-        }       
+        }
+
+        // Update table with sensors
+        this.api.getAllSensor()
+        .then(result => {
+            if (result.status) {
+                let data = result.data
+                data.forEach(element => {
+                    element.splice(5,2)
+                    element.splice(2,1)
+                });
+                console.log(data)
+                this.setState({
+                    dataSensors: data
+                })
+            }
+        })
     }
 
     componentWillUnmount() {
         this.mounted = false;
-        //this.api.abort();
+        this.api.abort();
     }
 
     componentDidUpdate(prevProps, prevState) {
@@ -56,7 +100,12 @@ export default class Sensor extends Component {
                 this.setState({
                     loggedIn: this.props.stateLogin
                 })
+                const jwt = localStorage.getItem("jwt")
+                if (jwt) {
+                    this.api.addToken(jwt)
+                }
             }
+            
         }
     }
 
@@ -72,7 +121,6 @@ export default class Sensor extends Component {
         })
     }
 
-
     handleChange(event) {
 
     }
@@ -84,9 +132,20 @@ export default class Sensor extends Component {
     }
 
     onModalAddClose = (value) => {
-        console.log("Trigger closing Modal add sensor")
-        this.setState({
-            showAddSensor: value
+        // Update table with new values
+        this.api.getAllSensor()
+        .then(result => {
+            if (result.status) {
+                let data = result.data
+                data.forEach(element => {
+                    element.splice(5,2)
+                });
+                console.log(data)
+                this.setState({
+                    dataSensors: data,
+                    showAddSensor: value
+                })
+            }
         })
     }
 
@@ -105,47 +164,37 @@ export default class Sensor extends Component {
 
     render() {
         const isLoggedIn = this.state.loggedIn
+        // Check if there is any new data
         let sensor;
         if (isLoggedIn === 1) {
             sensor = (
                 <SensorStyle>
                 <div className="sensor-container">
-                    <h3 className="sensor-title-sensors">All active DS18BS20 sensors</h3>
-                    <Table striped bordered hover size="sm">
+                    <h3 className="sensor-title">Active DS18BS20 sensors</h3>
+                    <Table striped bordered hover size="sm" className="table">
                         <thead>
-                            <tr>
-                            <th>#</th>
-                            <th>First Name</th>
-                            <th>Last Name</th>
-                            <th>Username</th>
-                            </tr>
+                        <tr>
+                            <th>Id</th>
+                            <th>Name</th>
+                            <th>Position</th>
+                            <th>Unit</th>
+                        </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                            <td>1</td>
-                            <td>Mark</td>
-                            <td>Otto</td>
-                            <td>@mdo</td>
-                            </tr>
-                            <tr>
-                            <td>2</td>
-                            <td>Jacob</td>
-                            <td>Thornton</td>
-                            <td>@fat</td>
-                            </tr>
-                            <tr>
-                            <td>3</td>
-                            <td colSpan="2">Larry the Bird</td>
-                            <td>@twitter</td>
-                            </tr>
+                            <CreateTable lst={this.state.dataSensors} />
                         </tbody>
                     </Table>
-                    <Button name="showAddSensor" 
-                            variant="secondary" 
-                            onClick={() => this.handleButtonShowAdd()}>Add</Button>
-                    <Button name="showDeleteSensor"
-                            variant="secondary"
-                            onClick={() => this.handleButtonShowDelete()}>Delete</Button>
+                    <Container className="sensor-buttons">
+                        <Row className="justify-content-md-center">
+                            <Button name="showAddSensor" 
+                                    variant="outline-secondary"
+                                    className="sensor-button" 
+                                    onClick={() => this.handleButtonShowAdd()}>Add</Button>
+                            <Button name="showDeleteSensor"
+                                    variant="outline-secondary"
+                                    onClick={() => this.handleButtonShowDelete()}>Delete</Button>
+                        </Row>
+                    </Container>
                     <ErrorBoundary>
                     <ModalAddSensor 
                         show={this.state.showAddSensor}

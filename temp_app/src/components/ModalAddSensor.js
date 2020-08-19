@@ -14,15 +14,16 @@ export default class ModalAddSensor extends Component{
     constructor(props) {
         super(props);
 
+        this.mounted = false;
         this.api = new API();
 
         this.state = {
             showHide: false,
-            name: '',
-            folder: '',
-            position: '',
-            unit: '',
-            comment: ''
+            sensorName: '',
+            sensorFolder: '',
+            sensorPosition: '',
+            sensorUnit: '',
+            sensorComment: ''
         }
         
         this.handleChange = this.handleChange.bind(this)
@@ -30,13 +31,21 @@ export default class ModalAddSensor extends Component{
         this.handleButtonCancel = this.handleButtonCancel.bind(this)
     }
 
+    componentDidMount() {
+        this.mounted = true;
+
+        const jwt = localStorage.getItem("jwt")
+        if (jwt) {
+            this.api.addToken(jwt)
+        }
+    }
+
     componentDidUpdate(prevProps, prevState) {
         // Can't update with undefined props
         if (this.props !== undefined) {
             if (this.props.show !== prevProps.show) {
                 console.log("Debug msg componentDidUpdate")
-                console.log(this.props)
-                console.log(this.state)
+                
                 this.setState({ 
                     showHide: this.props.show 
                 })
@@ -78,9 +87,26 @@ export default class ModalAddSensor extends Component{
     }
 
     handleButtonSave(event) {
-        // TODO Do API call
+        
+        this.api.addSensor(
+            this.state.sensorName,
+            this.state.sensorFolder,
+            this.state.sensorPosition,
+            this.state.sensorUnit,
+            this.state.sensorComment
+        )
+        .then(result => {
+            if (result.status ) {
+                console.log(result.data)
+            } else {
+                // TODO if code 401 logout 
+            }
+        })
 
-        // We used values and they will be cleared
+        // Close modal
+        this.props.onClosing(false);
+
+        // We used values so we can clear them
         this.setState({
             sensorName: '',
             sensorFolder: '',
@@ -88,8 +114,7 @@ export default class ModalAddSensor extends Component{
             sensorUnit: '',
             sensorComment: ''
         })
-        // Close modal
-        this.props.onClosing(false);
+
         //event.preventDefault();
     }
 
@@ -110,7 +135,6 @@ export default class ModalAddSensor extends Component{
     }
     
     render() {
-        console.log(this.state.showHide)
         return(
             <ModalStyles>
             <Modal

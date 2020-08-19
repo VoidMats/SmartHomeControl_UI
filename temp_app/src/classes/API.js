@@ -23,7 +23,7 @@ export default class APIData {
     }
 
     /**
-     * This method is used to add or refresh the token
+     * This method is used to add or refresh token
      */
     addToken(token) {
         this.token = token;
@@ -44,7 +44,8 @@ export default class APIData {
     -d '{"username":"test", "password":"test"}' http://192.168.1.52:5054/auth/login
     */
     //  curl -H "Access-Control-Request-Method: POST" -H "Origin: http://localhost" --head http://www.example.com/
-    //  curl -i -X POST -d '{"username":"test", "password":"test"}' http://192.168.1.52:5054/auth/login
+    //  curl -i -X POST -d '{"username":"test", "password":"test"}' http://192.168.1.52:5054/auth/
+    //  curl -i -X OPTIONS http://192.168.1.52:5054/path
     async login(login, pwd) {
         const jsonData = {
             "username": login,
@@ -93,8 +94,8 @@ export default class APIData {
             'unit' : unit,
             'comment' : comment 
         }
-        
         const path = this._createHttpPathRoute("temperature/sensor");
+        console.log(path + " POST")
         return await this._fetchDataPost(path, payload)
     }
 
@@ -105,11 +106,13 @@ export default class APIData {
 
     async getAllSensor() {
         const path =  this._createHttpPathRoute("temperature/sensor");
+        console.log(path + " GET")
         return await this._fetchDataGet(path)
     }
 
     async deleteSensor(sensor) {
         const path =  this._createHttpPathArg("temperature/sensor", [sensor]);
+        console.log(path + " DELETE")
         return await this._fetchDataDelete(path)
     }
 
@@ -125,6 +128,7 @@ export default class APIData {
 
     async readTemperature(sensor) {
         const path =  this._createHttpPathArg("/temperature/read", [sensor]);
+        console.log(path + " GET")
         return await this._fetchDataGet(path)
     }
 
@@ -159,7 +163,7 @@ export default class APIData {
     _createHttpPathArg(route, args = []) {
         let path = "http://" + Config['url'];
         path += ":" + Config['port'];
-        path += '/' + route + '/';
+        path += '/' + route;
         args.forEach(arg => {
             path += "/" + arg
         });
@@ -182,17 +186,13 @@ export default class APIData {
             },
             body: JSON.stringify(data)
         })
-        .then(res => {
-            if (res.ok)
-                res.json()
-            else {
-                console.error("Status: " + res.status)
-                console.error("Message: " + res.statusText)
-                return null
-            }
-        })
+        .then(response => response.json())
         .then(result => {
-            return result;
+            if (result.msg === 'Success') {
+                return {status:true, data:result.data};
+            } else {
+                return {status:false};
+            }
         })
         .catch(error => console.error(error) );
 
@@ -204,22 +204,27 @@ export default class APIData {
      * @async
      * @param {string} path
      */
-    async _fetchDataGet(path, data={}) {
+    async _fetchDataGet(path) {
 
         return await fetch(path, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': 'Bearer ' + this.token
-                },
-                body: JSON.stringify(data)
+                }
             })
-            .then(res => res.json())
+            .then(response => response.json())
             .then(result => {
-                console.log(result)
-                return result;
+                if (result.msg === 'Success') {
+                    return {status:true, data: result.data};
+                } else {
+                    return {status:false};
+                }
             })
-            .catch((error) => console.error(error) );
+            .catch(error => {
+                console.error(error)
+                return {status: false, data: error}
+            });
     }
 
     /**
@@ -241,7 +246,12 @@ export default class APIData {
         })
         .then(res => res.json())
         .then(result => {
-            return result;
+            console.log(result)
+            if (result.msg === 'Success') {
+                return {status:true, data:result.data};
+            } else {
+                return {status:false};
+            }
         })
         .catch(error => console.error(error));
     }
