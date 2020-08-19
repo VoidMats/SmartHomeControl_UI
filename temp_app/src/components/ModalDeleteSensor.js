@@ -14,15 +14,12 @@ export default class ModalDeleteSensor extends Component{
     constructor(props) {
         super(props);
 
+        this.mounted = false;
         this.api = new API();
 
         this.state = {
             showHide: false,
-            name: '',
-            folder: '',
-            position: '',
-            unit: '',
-            comment: ''
+            sensorId: undefined
         }
         
         this.handleChange = this.handleChange.bind(this)
@@ -30,13 +27,21 @@ export default class ModalDeleteSensor extends Component{
         this.handleButtonCancel = this.handleButtonCancel.bind(this);
     }
 
+    componentDidMount() {
+        this.mounted = true;
+
+        const jwt = localStorage.getItem("jwt")
+        if (jwt) {
+            this.api.addToken(jwt)
+        }
+    }
+
     componentDidUpdate(prevProps, prevState) {
         // Can't update with undefined props
         if (this.props !== undefined) {
             if (this.props.show !== prevProps.show) {
                 console.log("Debug msg componentDidUpdate")
-                console.log(this.props)
-                console.log(this.state)
+
                 this.setState({ 
                     showHide: this.props.show 
                 })
@@ -64,31 +69,42 @@ export default class ModalDeleteSensor extends Component{
     }
 
     handleButtonDelete = (event) => {
-        // TODO Do API call
+        
+        this.api.deleteSensor(this.state.sensorId)
+        .then(result => {
+            if (result.status) {
+                console.log(result.data)
+            } else {
+                // TODO if we get code 401 => logout  
+            }
+        })
+
+        // Close modal
+        this.props.onClosing(false);
 
         // We used values and they will be cleared
         this.setState({
-            sensorId: ''
+            sensorId: undefined
         })
-        // Close modal
-        this.props.onClosing(false);
         //event.preventDefault();
     }
 
     handleButtonCancel(event) {
+
         // Abort API call
         this.api.abort()
-        // Clear input values
-        this.setState({
-            sensorId: ''
-        })
+
         // Close modal
         this.props.onClosing(false);
+
+        // Clear input values
+        this.setState({
+            sensorId: undefined
+        })
         //event.preventDefault();
     }
     
     render() {
-        console.log(this.state.showHide)
         return(
             <ModalStyles>
             <Modal

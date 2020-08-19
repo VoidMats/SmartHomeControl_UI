@@ -72,7 +72,6 @@ export default class Login extends Component {
     }
 
     componentDidUpdate(prevProps, prevState) {
-        // Can't update with undefined props
         if (this.props !== undefined) {
             // Only update if props changed
             if (this.props.stateLogin !== prevProps.stateLogin) {
@@ -104,21 +103,29 @@ export default class Login extends Component {
     }
 
     handleLogin(event) {
-        // 
-        console.log('Send request to API')
-        const res = this.api.login(this.state.formUser, this.state.formPassword)
-        console.log(res)
+        
+        let apiResult = false;
+        this.api.login(this.state.formUser, this.state.formPassword)
+            .then(result => {
+                console.log(result)
+                if (result !== undefined) {
+                    localStorage.setItem('jwt', result);
+                    localStorage.setItem('loggedIn', 1);
+                    localStorage.setItem('loggedInAs', this.state.formUser);
+                    apiResult = true;
+                }
+            })
+            .catch(error => {
+                console.warn(error)
+            })
 
-        // Set state
-        this.setState({
-            loggedIn: 1,
-            loggedInAs: this.state.formUser 
-        });
-        // Add username to localstorage
-        localStorage.setItem('loggedIn', 1);
-        localStorage.setItem('loggedInAs', this.state.formUser);
-        // Pass value to parent
-        this.props.onLogin(1);
+        if (apiResult) {
+            this.setState({
+                loggedIn: 1,
+                loggedInAs: this.state.formUser 
+            });
+            this.props.onLogin(1);
+        }
 
         event.preventDefault();
     }
@@ -130,11 +137,11 @@ export default class Login extends Component {
         });
         localStorage.removeItem('loggedIn');
         localStorage.removeItem('loggedInAs');
+        localStorage.removeItem('jwt');
     }
     
     render() {
         const isLoggedIn = this.state.loggedIn
-        console.log(isLoggedIn)
         let login;
         if (isLoggedIn === 0) {
             login = (

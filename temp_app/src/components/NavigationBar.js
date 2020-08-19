@@ -70,7 +70,7 @@ export default class NavigationBar extends Component {
         return ( 
             <NavbarStyle>
                 <Navbar expand="lg">
-                    <Navbar.Brand href="/">Home Temperature control</Navbar.Brand>
+                    <Navbar.Brand href="/">Smart Home Control</Navbar.Brand>
                     <Navbar.Toggle aria-controls="basic-navbar-nav"/>
                     <Navbar.Collapse id="basic-navbar-nav">
                     <Nav className="ml-auto">
