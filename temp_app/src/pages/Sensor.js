@@ -36,17 +36,17 @@ export default class Sensor extends Component {
         //this.api = new API();
         this.mounted = false;
         this.showAdd = false;
-        this.data = [
-            [1, 'Sensor1', 'Hall', 'C'],
-            [2, 'Sensor2', 'Dinner', 'F'],
-            [3, 'Sensor3', 'Bedroom', 'C']
-        ];
         this.api = new API();
 
         this.state = {
             loggedIn: 0,
             showAddSensor: false,
-            showDeleteSensor: false
+            showDeleteSensor: false,
+            dataSensors: [
+                [1, "Sensor1", "Hall", "C"],
+                [2, "Sensor2", "Dinner", "F"],
+                [3, "Sensor3", "Bedroom", "C"]
+            ]
         }
 
         this.handleButtonShowAdd = this.handleButtonShowAdd.bind(this);
@@ -58,20 +58,38 @@ export default class Sensor extends Component {
     componentDidMount() {
         this.mounted = true;
 
+        const jwt = localStorage.getItem("jwt")
+        if (jwt) {
+            this.api.addToken(jwt)
+        }
+        
         const lsLoggedIn = localStorage.getItem('loggedIn');
         if (lsLoggedIn === 1) {
             this.setState({
                 loggedIn: 1
             })
-            // TODO add token to API
         }
-        // TODO Collect data from API
 
+        // Update table with sensors
+        this.api.getAllSensor()
+        .then(result => {
+            if (result.status) {
+                let data = result.data
+                data.forEach(element => {
+                    element.splice(5,2)
+                    element.splice(2,1)
+                });
+                console.log(data)
+                this.setState({
+                    dataSensors: data
+                })
+            }
+        })
     }
 
     componentWillUnmount() {
         this.mounted = false;
-        //this.api.abort();
+        this.api.abort();
     }
 
     componentDidUpdate(prevProps, prevState) {
@@ -82,8 +100,12 @@ export default class Sensor extends Component {
                 this.setState({
                     loggedIn: this.props.stateLogin
                 })
-                // TODO add token to API
+                const jwt = localStorage.getItem("jwt")
+                if (jwt) {
+                    this.api.addToken(jwt)
+                }
             }
+            
         }
     }
 
@@ -99,7 +121,6 @@ export default class Sensor extends Component {
         })
     }
 
-
     handleChange(event) {
 
     }
@@ -111,9 +132,20 @@ export default class Sensor extends Component {
     }
 
     onModalAddClose = (value) => {
-        console.log("Trigger closing Modal add sensor")
-        this.setState({
-            showAddSensor: value
+        // Update table with new values
+        this.api.getAllSensor()
+        .then(result => {
+            if (result.status) {
+                let data = result.data
+                data.forEach(element => {
+                    element.splice(5,2)
+                });
+                console.log(data)
+                this.setState({
+                    dataSensors: data,
+                    showAddSensor: value
+                })
+            }
         })
     }
 
@@ -132,6 +164,7 @@ export default class Sensor extends Component {
 
     render() {
         const isLoggedIn = this.state.loggedIn
+        // Check if there is any new data
         let sensor;
         if (isLoggedIn === 1) {
             sensor = (
@@ -148,7 +181,7 @@ export default class Sensor extends Component {
                         </tr>
                         </thead>
                         <tbody>
-                            <CreateTable lst={this.data} />
+                            <CreateTable lst={this.state.dataSensors} />
                         </tbody>
                     </Table>
                     <Container className="sensor-buttons">
