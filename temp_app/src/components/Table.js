@@ -23,3 +23,4 @@ export const CreateTable = (props) => {
     })
     return rtnData
 }
+

@@ -118,6 +118,7 @@ export default class APIData {
 
     async startMeasure(secs) {
         const path =  this._createHttpPathArg("/temperature/start", [secs]);
+        console.log(path + " GET")
         return await this._fetchDataGet(path)
     }
 
