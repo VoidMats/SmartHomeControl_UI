@@ -8,6 +8,7 @@ import Home from './pages/Home';
 import Login from './pages/Login';
 import Sensor from './pages/Sensor';
 import About from './pages/About';
+import Graph from './pages/Graph';
 import { Nomatch } from './pages/Nomatch';
 import ErrorBoundary from './components/ErrorBoundary';
 //import API from './classes/API.js';
@@ -81,11 +82,13 @@ export default class App extends Component {
         <Router>
           <Switch>
             <Route exact path="/" render={(props) => 
-              <Home {...props} stateLogin={this.state.loggedIn} />} />
+              <Home {...props} stateLogin={this.state.loggedIn} onLogout={this.handleLogoutChange} />} />
             <Route path="/about" render={(props) =>
               <About {...props} stateLogin={this.state.loggedIn} />} />
             <Route path="/sensor" render={(props) => 
-              <Sensor {...props} stateLogin={this.state.loggedIn} />} />
+              <Sensor {...props} stateLogin={this.state.loggedIn} onLogout={this.handleLogoutChange} />} />
+            <Route path="/graph" render={(props) => 
+              <Graph {...props} stateLogin={this.state.loggedIn} onLogout={this.handleLogoutChange} />} />
             <Route component={Nomatch} />
           </Switch>
         </Router>

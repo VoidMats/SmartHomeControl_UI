@@ -62,7 +62,9 @@ export default class NavigationBar extends Component {
     handleLogout(event) {
         localStorage.clear('loggedIn');
         localStorage.clear('loggedInAs');
-        this.props.onLogout(0)
+        localStorage.clear('jwt');
+        this.props.onLogout(0);
+        
         event.preventDefault();
     }
     
@@ -76,6 +78,7 @@ export default class NavigationBar extends Component {
                     <Nav className="ml-auto">
                         <Nav.Link href="/">Home</Nav.Link> 
                         <Nav.Link href="/Sensor">Sensor</Nav.Link>
+                        <Nav.Link href="/Graph">Graph</Nav.Link>
                         <Nav.Link href="/about">About</Nav.Link>
                     </Nav>
                     <Button 

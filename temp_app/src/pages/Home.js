@@ -31,6 +31,14 @@ const HomeStyle = styled.div`
     }
 `;
 
+/*
+const ClearLoginData = _ => {
+    localStorage.clear('loggedIn');
+    localStorage.clear('loggedInAs');
+    localStorage.clear('jwt');
+} 
+*/
+
 export default class Home extends Component {
 
     constructor(props) {
@@ -69,6 +77,9 @@ export default class Home extends Component {
         const jwt = localStorage.getItem("jwt")
         if (jwt) {
             this.api.addToken(jwt)
+        } else {
+            this.api.addToken('')
+            this.props.onLogout(0)
         }
 
         const lsLoggedIn = localStorage.getItem('loggedIn');
@@ -98,6 +109,8 @@ export default class Home extends Component {
                         }
                     })
                 });
+            } else {
+                // TODO check status. If the code is 401 logout
             }
             return data
         })
@@ -171,7 +184,6 @@ export default class Home extends Component {
                 }
             })
         }
-
     }
 
     handleButtonStopReading() {
@@ -272,7 +284,7 @@ export default class Home extends Component {
             )
         } else {
             home = (
-                <div className="login-container"></div>
+                <div className="home-container"></div>
             )
         }
         // Return the page
