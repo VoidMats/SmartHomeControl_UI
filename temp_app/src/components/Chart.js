@@ -3,9 +3,11 @@ import React, { Component } from 'react'
 import { 
     XYPlot, 
     HorizontalGridLines, 
+    VerticalGridLines,
     XAxis, 
     YAxis, 
-    LineSeries 
+    LineSeries,
+    LineMarkSeries 
 } from 'react-vis';
 
 export default class Chart extends Component {
@@ -19,7 +21,11 @@ export default class Chart extends Component {
         this.state = {
             data: '',
             width: 300,
-            height: 300
+            height: 300,
+            titles: {
+                X: "Time",
+                Y: "Temperature"
+            }
         }
     }
 
@@ -52,18 +58,34 @@ export default class Chart extends Component {
         }
     }
 
+
+
     render() {
         
         return (
             <div ref={this.widthRef}>
-                <XYPlot height={this.state.height} width= {this.state.width}>
-                    <HorizontalGridLines />
-                    <XAxis />
-                    <YAxis />
-                    <LineSeries data={this.state.data} />
+                <XYPlot 
+                    xType="ordinal" 
+                    height={this.state.height} 
+                    width= {this.state.width}
+                    margin={{left: 50, right:10, top:20, bottom: 80}}>
+                    <HorizontalGridLines 
+                        height={3} />
+                    <VerticalGridLines />
+                    <XAxis 
+                        tickLabelAngle={-45}
+                        title={this.state.titles.X} />
+                    <YAxis
+                        title={this.state.titles.Y} />
+                    <LineMarkSeries
+                        style={{strokeLinejoin: "round"}} 
+                        color="green"
+                        data={this.state.data} />
                 </XYPlot>
             </div>
         )
     }
 
 }
+
+// onNearestX={}/>

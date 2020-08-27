@@ -25,13 +25,13 @@ const GraphStyle = styled.div`
 
 const SensorList = (props) => {
     const sensors = props.sensors;
-    console.log(sensors)
     let listSensors = []
     if (sensors !== undefined ) {
         listSensors = sensors.map(row => 
-        <ListGroup.Item 
-            key={row[0].toString()} 
-            onClick={props.onClick} >{row[1]}</ListGroup.Item>
+        <ListGroup.Item action variant="dark"
+            key={row[0]}
+            eventKey={row[0]} 
+            onClick={props.onClick} >{row[0]}  {row[1]}</ListGroup.Item>
     )}
     return (
         <ListGroup >
@@ -56,16 +56,10 @@ export default class Graph extends Component {
             height: 400,
             width: 400,
             data: [
-                {x: 0, y: 8},
-                {x: 1, y: 5},
-                {x: 2, y: 4},
-                {x: 3, y: 9},
-                {x: 4, y: 1},
-                {x: 5, y: 7},
-                {x: 6, y: 6},
-                {x: 7, y: 3},
-                {x: 8, y: 2},
-                {x: 9, y: 5}
+                {x: "08/20 13:23", y: 29.062},
+                {x: "08/21 14:24", y: 29.062},
+                {x: "08/22 08:30", y: 28.875},
+                {x: "08/23 14:27", y: 28.125},
             ]
         }
 
@@ -96,7 +90,6 @@ export default class Graph extends Component {
         })
         .then(sensors => {
             const lsLoggedIn = localStorage.getItem('loggedIn');
-            console.log("We are logged in at graph")
             if (lsLoggedIn === 1) {
                 this.setState({
                     loggedIn: 1,
@@ -159,10 +152,43 @@ export default class Graph extends Component {
 
     handleSubmit(event) {
 
-        console.log("We trigger list")
-
         if (this.state.sensors !== '' && this.state.from !== '' && this.state.to !== '') {
-            // TODO API call
+            console.log("We trigger list")
+
+            
+            console.log(event.target.innerText)
+            console.log(this.state.from.toUTCString())
+            console.log(this.state.to.toUTCString())
+
+            let value = '';
+            const patt = /^\d+/;
+            if (patt.test(event.target.innerText)) {
+                value = patt.exec(event.target.innerText);
+            }
+            
+            this.api.getTemperature(
+                value, 
+                this.state.from,
+                this.state.to
+            )
+            .then(result => {
+                let data = []
+                if (result.status) {
+                    data = result.data.map(row => {
+                        const regexDate = /\d+-(\d+)-(\d+)(\s\d+:\d+)/;
+                        const date = row[3];
+                        const match = regexDate.exec(date)
+                        const strDate = match[2] + '/' + match[1] + match[3] 
+                        return {x: strDate, y: row[2]}
+                    })    
+                }
+                return data
+            })
+            .then(data => {
+                this.setState({
+                    data: data
+                })
+            })
         }
     }
 
@@ -201,8 +227,6 @@ export default class Graph extends Component {
                                 <SensorList sensors={activeSensors} onClick={this.handleSubmit}/>
                             </Col>
                         </Row>
-                        
-                        
                     </Container>
                 </div>
                 </GraphStyle>

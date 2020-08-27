@@ -78,7 +78,7 @@ export default class APIData {
 
 
     /**
-     * 
+     * This method add a DS18BS20 sensor
      * @async
      * @param {string} name 
      * @param {string} folder 
@@ -140,7 +140,8 @@ export default class APIData {
             'end_date' : to
         }
         const path =  this._createHttpPathRoute("/temperature");
-        return await this._fetchDataGet(path, payload)
+        console.log(path + " POST")
+        return await this._fetchDataPost(path, payload)
     }
 
     /**
@@ -189,6 +190,7 @@ export default class APIData {
         })
         .then(response => response.json())
         .then(result => {
+            console.log(result)
             if (result.msg === 'Success') {
                 return {status:true, data:result.data};
             } else {
