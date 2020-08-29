@@ -6,8 +6,8 @@ import {
     VerticalGridLines,
     XAxis, 
     YAxis, 
-    LineSeries,
-    LineMarkSeries 
+    LineMarkSeries,
+    PolygonSeries 
 } from 'react-vis';
 
 export default class Chart extends Component {
@@ -19,7 +19,8 @@ export default class Chart extends Component {
         this.widthRef = React.createRef();
 
         this.state = {
-            data: '',
+            data: [],
+            dataMark: [],
             width: 300,
             height: 300,
             titles: {
@@ -32,7 +33,7 @@ export default class Chart extends Component {
     componentDidMount() {
         this.mounted = true;
 
-        let data= '';
+        let data= [];
         const width = this.widthRef.current.offsetWidth;
         const height = Math.round(0.6 * width);
 
@@ -50,15 +51,13 @@ export default class Chart extends Component {
     componentDidUpdate(prevProps, prevState) {
         if (this.props !== undefined) {
             if (this.props.data !== prevProps.data) {
-                console.log("Pushed data to chart")
                 this.setState({
-                    data: this.props.data
+                    data: this.props.data,
+                    dataMark: this.props.dataMark
                 })
             }
         }
     }
-
-
 
     render() {
         
@@ -69,8 +68,7 @@ export default class Chart extends Component {
                     height={this.state.height} 
                     width= {this.state.width}
                     margin={{left: 50, right:10, top:20, bottom: 80}}>
-                    <HorizontalGridLines 
-                        height={3} />
+                    <HorizontalGridLines />
                     <VerticalGridLines />
                     <XAxis 
                         tickLabelAngle={-45}
@@ -78,9 +76,11 @@ export default class Chart extends Component {
                     <YAxis
                         title={this.state.titles.Y} />
                     <LineMarkSeries
-                        style={{strokeLinejoin: "round"}} 
                         color="green"
                         data={this.state.data} />
+                    <PolygonSeries
+                        color="rgba(140, 195, 168, 0.4)"
+                        data={this.state.dataMark} />
                 </XYPlot>
             </div>
         )
@@ -89,3 +89,14 @@ export default class Chart extends Component {
 }
 
 // onNearestX={}/>
+/*
+
+
+
+
+*/
+                    
+
+                   
+    
+                    

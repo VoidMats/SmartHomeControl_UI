@@ -7,8 +7,10 @@ export const CreateRow = (props) => {
     if (props.row !== undefined) {
         row = props.row 
     }
+    let index = -1
     const rtnRow = row.map(element => {
-        return <td>{element.toString()}</td>
+        index = index + 1
+        return <td key={index}>{element.toString()}</td>
     })
     return rtnRow
 }
@@ -19,7 +21,7 @@ export const CreateTable = (props) => {
         lst = props.lst
     }
     const rtnData = lst.map(row => {
-        return (<tr><CreateRow row={row} /></tr>)
+        return (<tr key={row[0]}><CreateRow row={row} /></tr>)
     })
     return rtnData
 }

@@ -107,7 +107,6 @@ export default class Login extends Component {
         let apiResult = false;
         this.api.login(this.state.formUser, this.state.formPassword)
             .then(result => {
-                console.log(result)
                 if (result !== undefined) {
                     localStorage.setItem('jwt', result);
                     localStorage.setItem('loggedIn', 1);

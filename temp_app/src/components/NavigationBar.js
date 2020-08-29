@@ -8,7 +8,9 @@ const NavbarStyle = styled.div`
     .navbar { background-color: #8cc3a8; }
     a, .navbar-nav, .navbar-light .nav-link {
         color: #4a7f65;
-        &:hover { color: #42554b; }
+        &:hover { 
+            color: #42554b; 
+        }
     }
     .navbar-brand {
         font-size: 1.4em;
@@ -19,6 +21,20 @@ const NavbarStyle = styled.div`
         position: absolute !important;
         left: 25%;
         right: 25%;
+    }
+    .btn-outline-primary {
+        color: #4a7f65;
+        background-color: transparent;
+        background-image: none;
+        border-color: #4a7f65;
+        &:hover { 
+            color: #D9F0E5;
+            border-color: #D9F0E5;
+        }
+        &:focus {
+            color: #D9F0E5;
+            border-color: #D9F0E5;
+        }
     }
 `;
 
@@ -77,13 +93,14 @@ export default class NavigationBar extends Component {
                     <Navbar.Collapse id="basic-navbar-nav">
                     <Nav className="ml-auto">
                         <Nav.Link href="/">Home</Nav.Link> 
-                        <Nav.Link href="/Sensor">Sensor</Nav.Link>
-                        <Nav.Link href="/Graph">Graph</Nav.Link>
+                        <Nav.Link href="/sensor">Sensor</Nav.Link>
+                        <Nav.Link href="/graph">Graph</Nav.Link>
                         <Nav.Link href="/about">About</Nav.Link>
                     </Nav>
                     <Button 
                         variant="outline-primary" 
                         className="pull-right"
+                        disabled={this.state.loggedIn === 1 ? false : true}
                         onClick={this.handleLogout}>Logout</Button>
                     </Navbar.Collapse>
                 </Navbar>

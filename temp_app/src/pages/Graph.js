@@ -40,6 +40,18 @@ const SensorList = (props) => {
     )
 }
 
+function arrayMinMax(arr) {
+    let min = Infinity;
+    let max = -Infinity;
+    let size = arr.length
+    for (const value of arr) {
+        if (value < min) min = value
+        if (value > max) max = value
+    }
+    let diff = max-min
+    return [min, max, diff,  min+diff*0.25, min+diff*0.75, size] 
+}
+
 export default class Graph extends Component {
 
     constructor(props) {
@@ -153,12 +165,6 @@ export default class Graph extends Component {
     handleSubmit(event) {
 
         if (this.state.sensors !== '' && this.state.from !== '' && this.state.to !== '') {
-            console.log("We trigger list")
-
-            
-            console.log(event.target.innerText)
-            console.log(this.state.from.toUTCString())
-            console.log(this.state.to.toUTCString())
 
             let value = '';
             const patt = /^\d+/;
@@ -180,13 +186,30 @@ export default class Graph extends Component {
                         const match = regexDate.exec(date)
                         const strDate = match[2] + '/' + match[1] + match[3] 
                         return {x: strDate, y: row[2]}
-                    })    
+                    })
                 }
                 return data
             })
-            .then(data => {
+            .then( data => {
+                let values = data.map(row => {
+                    return row.y
+                })
+                let limits = arrayMinMax(values)                
+                console.log(limits)
+                let dataMark = [
+                    {x: data[0].x, y: limits[3]},
+                    {x: data[0].x, y: limits[4]},
+                    {x: data[limits[5]-1].x, y: limits[4]},
+                    {x: data[limits[5]-1].x, y: limits[3]}
+                ]
+                return [data, dataMark]
+            })
+            .then( result => {
+                console.log(result[0])
+                console.log(result[1])
                 this.setState({
-                    data: data
+                    data: result[0],
+                    dataMark: result[1]
                 })
             })
         }
@@ -196,8 +219,6 @@ export default class Graph extends Component {
 
         const isLoggedIn = this.state.loggedIn;
         const activeSensors = this.state.sensors;
-        console.log(activeSensors)
-        //console.log(typeof activeSensors)
         
         let graph;
         if (isLoggedIn === 1) {
@@ -205,7 +226,8 @@ export default class Graph extends Component {
                 <GraphStyle>
                 <div className="graph-container">
                     <div id="graph-chart">
-                        <Chart data={this.state.data} />
+                        <Chart data={this.state.data} 
+                               dataMark={this.state.dataMark}/>
                     </div>
                     <Container className="graph-bar">
                         <Row>
@@ -224,7 +246,9 @@ export default class Graph extends Component {
                                 </ErrorBoundary>
                             </Col>
                             <Col>
+                                <ErrorBoundary>
                                 <SensorList sensors={activeSensors} onClick={this.handleSubmit}/>
+                                </ErrorBoundary>
                             </Col>
                         </Row>
                     </Container>
